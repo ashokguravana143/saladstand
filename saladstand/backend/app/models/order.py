@@ -23,5 +23,14 @@ class Order(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     delivered_at = Column(DateTime, nullable=True)
 
-    user = relationship("User")
+    # ✅ Customer
+    user = relationship("User", foreign_keys=[user_id])
+
+    # ✅ Delivery Boy
+    delivery_boy = relationship("User", foreign_keys=[delivery_boy_id])
+
     items = relationship("OrderItem", back_populates="order")
+
+    user = relationship("User", foreign_keys=[user_id], back_populates="orders")
+    delivery_boy = relationship("User", foreign_keys=[delivery_boy_id], back_populates="deliveries")
+    

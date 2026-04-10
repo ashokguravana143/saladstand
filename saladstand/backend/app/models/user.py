@@ -12,3 +12,9 @@ class User(Base):
     role_id = Column(Integer, ForeignKey("roles.id"))
 
     role = relationship("Role")
+
+    # Customer orders
+orders = relationship("Order", foreign_keys="Order.user_id", back_populates="user")
+
+# Delivery assigned orders
+deliveries = relationship("Order", foreign_keys="Order.delivery_boy_id", back_populates="delivery_boy")
