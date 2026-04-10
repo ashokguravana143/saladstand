@@ -6,6 +6,13 @@ from app.controllers import auth_controller
 from app.controllers import admin_controller
 from app.controllers import menu_controller
 from app.controllers import cart_controller
+from app.controllers import order_controller
+
+
+
+
+
+
 app = FastAPI()
 seed_roles()
 
@@ -14,6 +21,7 @@ app.include_router(auth_controller.router, prefix="/auth")
 app.include_router(admin_controller.router)
 app.include_router(menu_controller.router )
 app.include_router(cart_controller.router)
+app.include_router(order_controller.router)
 
 @app.get("/")
 def home():

@@ -30,3 +30,11 @@ def remove_item(db: Session, user_id: int, menu_id: int):
     if item:
         db.delete(item)
         db.commit()
+
+def clear_cart(db, user_id):
+    cart_items = db.query(Cart).filter(Cart.user_id == user_id).all()
+
+    for item in cart_items:
+        db.delete(item)
+
+    db.commit()

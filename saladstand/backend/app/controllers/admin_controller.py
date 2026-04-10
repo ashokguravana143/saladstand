@@ -1,7 +1,6 @@
-from http.client import HTTPException
-
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from app.core.dependencies import get_current_user
+
 router = APIRouter(prefix="/admin")
 
 @router.get("/dashboard")
