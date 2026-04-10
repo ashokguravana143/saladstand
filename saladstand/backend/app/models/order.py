@@ -19,6 +19,7 @@ class Order(Base):
     total_amount = Column(Float)
     status = Column(Enum(OrderStatus), default=OrderStatus.PENDING)
     payment_method = Column(String)
+    delivery_boy_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     delivered_at = Column(DateTime, nullable=True)
 

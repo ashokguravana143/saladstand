@@ -45,6 +45,9 @@ def update_order_status(db, order_id, new_status, user):
         from datetime import datetime
         order.delivered_at = datetime.utcnow()
 
+    if new_status == OrderStatus.PICKED_UP:
+        order.delivery_boy_id = user["user_id"]
+
     db.commit()
     db.refresh(order)
 
