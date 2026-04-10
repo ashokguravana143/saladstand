@@ -3,6 +3,54 @@ from app.models.order_item import OrderItem
 from app.repositories.cart_repository import get_cart_items, clear_cart
 from app.repositories.menu_repository import get_menu_by_id
 from fastapi import HTTPException
+from app.models.order import OrderStatus
+from app.repositories.order_repository import get_order_by_id
+
+def update_order_status(db, order_id, new_status, user):
+
+    order = get_order_by_id(db, order_id)
+
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")  
+
+    # 🔥 ADMIN FLOW
+    if user["role"] == "ADMIN":
+
+        if new_status == OrderStatus.ACCEPTED:
+            if order.status != OrderStatus.PENDING:
+                raise HTTPException(status_code=400, detail="Only PENDING orders can be accepted")
+
+        elif new_status == OrderStatus.READY_TO_PICK:
+            if order.status != OrderStatus.ACCEPTED:
+                raise HTTPException(status_code=400, detail="Only ACCEPTED orders can be marked ready")
+
+    # 🔥 DELIVERY FLOW
+    elif user["role"] == "DELIVERY":
+
+        if new_status == OrderStatus.PICKED_UP:
+            if order.status != OrderStatus.READY_TO_PICK:
+                raise HTTPException(status_code=400, detail="Order not ready for pickup")
+
+        elif new_status == OrderStatus.DELIVERED:
+            if order.status != OrderStatus.PICKED_UP:
+                raise HTTPException(status_code=400, detail="Order not picked yet")
+
+    else:
+        raise HTTPException(status_code=403, detail="Unauthorized role")
+
+    # ✅ Update
+    order.status = new_status
+
+    if new_status == OrderStatus.DELIVERED:
+        from datetime import datetime
+        order.delivered_at = datetime.utcnow()
+
+    db.commit()
+    db.refresh(order)
+
+    return order
+
+
 def place_order(db, user_id, payment_method):
 
     cart_items = get_cart_items(db, user_id)
